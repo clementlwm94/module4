@@ -7,9 +7,6 @@ print("dlt version:", dlt.__version__)
 import dlt
 from dlt.sources.helpers.rest_client import RESTClient
 from dlt.sources.helpers.rest_client.paginators import PageNumberPaginator
-
-
-# your code is here
 @dlt.resource(name="rides") 
 def ny_taxi():
     client = RESTClient(
@@ -20,8 +17,8 @@ def ny_taxi():
         )
     )
 
-    for page in client.paginate("data_engineering_zoomcamp_api"):    # <--- API endpoint for retrieving taxi ride data
-        yield page   # <--- yield data to manage memory
+    for page in client.paginate("data_engineering_zoomcamp_api"):
+        yield page 
 
 pipeline = dlt.pipeline(
     pipeline_name="ny_taxi_pipeline",
@@ -33,16 +30,8 @@ pipeline = dlt.pipeline(
 import duckdb
 from google.colab import data_table
 data_table.enable_dataframe_formatter()
-
-# A database '<pipeline_name>.duckdb' was created in working directory so just connect to it
-
-# Connect to the DuckDB database
 conn = duckdb.connect(f"{pipeline.pipeline_name}.duckdb")
-
-# Set search path to the dataset
 conn.sql(f"SET search_path = '{pipeline.dataset_name}'")
-
-# Describe the dataset
 conn.sql("DESCRIBE").df()
 
 #Q4
@@ -55,5 +44,4 @@ with pipeline.sql_client() as client:
             FROM rides;
             """
         )
-    # Prints column values of the first row
     print(res)
